@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<title>Trade War</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="static/js/jquery-1.12.1.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<style>
+
+.container {
+    border: 2px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.darker {
+    border-color: #ccc;
+    background-color: #ddd;
+}
+
+.container::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.container img {
+    float: left;
+    max-width: 60px;
+    width: 100%;
+    margin-right: 20px;
+    border-radius: 50%;
+}
+
+.container img.right {
+    float: right;
+    margin-left: 20px;
+    margin-right:0;
+}
+
+.time-right {
+    float: right;
+    color: #aaa;
+}
+
+.time-left {
+    float: left;
+    color: #999;
+}
+
+
+body,h1,h2,h3,h4,h5 {font-family: "Poppins", sans-serif}
+/*body {font-size: 16px;}*/
+/*img {margin-bottom: -8px;}*/
+.w3-sidebar {width: 120px;background: #222;}
+.mySlides {display: none;}
+.responsive {
+    width: 100%;
+    height: auto;
+}
+
+
+.myImg {
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.myImg:hover {opacity: 0.7;}
+
+.LDA:hover {opacity: 0.7;}
+
+.LDAmodel:hover {opacity: 0.7;}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+/* Modal Content (image) */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+
+/* Caption of Modal Image */
+#caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    height: 150px;
+}
+
+/* Add Animation */
+.modal-content, #caption {
+    -webkit-animation-name: zoom;
+    -webkit-animation-duration: 0.6s;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+    from {-webkit-transform: scale(0)}
+    to {-webkit-transform: scale(1)}
+}
+
+@keyframes zoom {
+    from {transform: scale(0.1)}
+    to {transform: scale(1)}
+}
+
+/* The Close Button */
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px){
+    .modal-content {
+        width: 100%;
+    }
+}
+
+</style>
+
+<body class="w3-black">
+
+
+  <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
+    <button class="w3-bar-item w3-button w3-large" onclick="w3_close()" style="text-align: center;">Close &times;</button>
+      <a href="#" class="w3-bar-item w3-button w3-padding-medium w3-hover-black" style="text-align: center;">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>ABOUT</p>
+      </a>
+      <a href="#model1" class="w3-bar-item w3-button w3-padding-medium w3-hover-black" style="text-align: center;">
+        <i class="fa fa-line-chart w3-xxlarge"></i>
+        <p>Sentiment Analysis</p>
+      </a>
+      <a href="#model2" class="w3-bar-item w3-button w3-padding-medium w3-hover-black" style="text-align: center;">
+        <i class="fa fa-bar-chart w3-xxlarge"></i>
+        <p>LDA Model</p>
+      </a>
+      <a href="#reason" class="w3-bar-item w3-button w3-padding-medium w3-hover-black" style="text-align: center;">
+        <i class="fa fa-eye w3-xxlarge"></i>
+        <p>Insights</p>
+      </a>
+      <a href="#people" class="w3-bar-item w3-button w3-padding-medium w3-hover-black" style="text-align: center;">
+        <i class="fa fa-user w3-xxlarge"></i>
+      <p>Team</p>
+      </a>
+  </div>
+
+  <!-- Page Content -->
+
+  <div id="main">
+
+  <!-- Side Bar Button -->
+  <div class="w3-black" style="position: -webkit-sticky; /* Safari */ position: sticky; top: 0;">
+    <button id="openNav" class="w3-button w3-black w3-xlarge" onclick="w3_open()">&#9776;</button>
+  </div>
+
+  <!-- Title Page -->
+  <header class="w3-center">
+    <div class="w3-animate-opacity">
+      <img class="w3-image responsive" src="static/img/ChinaUS.jpg" alt="Image">
+      <div class="w3-display-right w3-padding" style="width:35%">
+        <div class="w3-black w3-opacity w3-hover-opacity-off w3-padding-large w3-round-large">
+          <h1 class="w3-text-red" style="font-size:60px;"><b>Trade War</b></h1>
+          <hr class="w3-opacity">
+            <p style="font-size:60px;">US &amp; China</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- Definition -->
+  <div class="w3-padding-32 w3-light-grey">
+    <div class="w3-row-padding">
+      <div class="w3-col l4 m6">
+        <img class="w3-image w3-round-large w3-hide-small" src="static/img/trump-3.jpg" alt="App" width="350" height="400">
+      </div>
+      <div class="w3-col l8 m6">
+          <h1 class="w3-xxxlarge w3-text-red"><b> What it is?</b></h1>
+          <p>Donald Trump and its trade war During his election campaign, President Donald Trump threatened to impose 35% to 45% tariffs on Chinese imports to force China into renegotiating its trade balance with the U.S. The immediate result of that would be a fierce trade war.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Twitter Content-->
+  <div class="w3-container w3-padding-64 w3-white w3-center">
+
+    <div class="container">
+      <img src="static/img/trump.jpg" alt="Avatar" style="width:100%;">
+        <p>When a car is sent to the United States from China, there is a Tariff to be paid of 2 1/2%. When a car is sent to China from the United States, there is a Tariff to be paid of 25%. Does that sound like free or fair trade.  No, it sounds like STUPID TRADE -  going on for years!</p>
+        <span class="time-right">Retwitter Count: 1448</span>
+    </div>
+
+    <div class="container darker">
+      <img src="static/img/Brian Krassenstein.jpg" alt="Avatar" class="right" style="width:100%;">
+      <p>Good Morning America! Today, many of you in the midwest who voted for Trump are finding out that China has implemented 25% tariffs against 128 US products, many of which you, your family &amp; your friends make How do you feel about your vote now? PS. It's only going to get worse!</p>
+      <span class="time-left">Retwitter Count: 910</span>
+    </div>
+
+    <div class="container">
+      <img src="static/img/Educating Liberals.jpg" alt="Avatar" style="width:100%;">
+      <p>We are not in a trade war with China, that war was lost many years ago by the foolish, or incompetent, people who represented the U.S. Now we have a Trade Deficit of $500 Billion a year, with Intellectual Property Theft of another $300 Billion. We cannot let this continue!</p>
+      <span class="time-right">Retwitter Count: 635</span>
+    </div>
+
+    <div class="container darker">
+      <img src="static/img/Sen Dianne Feinstein.jpg" alt="Avatar" class="right" style="width:100%;">
+      <p>President Trump¡¯s trade war means that 90 percent of California¡¯s leading nut and fruit exports are hit with retaliatory tariffs. The president¡¯s misguided actions are already causing real harm to our agricultural community, and additional tariffs could bring even more damage.</p>
+      <span class="time-left">Retwitter Count: 608</span>
+    </div>
+
+  </div>
+
+  <!-- Opinion Leaders -->
+  <div class="w3-padding-64 w3-center w3-white">
+    <h1 class="w3-jumbo"><b>Opinion Leaders</b></h1>
+    <p class="w3-large">The group of influencers, and they have a large, active audience that consumes and multiplies the content published by the influencer.</p>
+    <div class="w3-row-padding">
+      <div class="w3-half w3-section">
+        <object type="text/html" data="static/img/Net2_100.html" width="600" height="500" ></object>
+        <p align="left">You cloud click the circle to see the name, you can also drag them.</p>
+        <p align="left">The larger the cicle, the more followers this user has.The color represent the attitude of the user towards the topic.</p>
+        <p align="left">The netword relation represent the retweets relation. The center is the original tweet, children are the people who retweet.</p >
+      </div>
+      <div class="w3-half w3-section">
+        <object type="text/html" data="static/img/top20.html" width="600" height="600" ></object>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sentiment Analysis -->
+  <div class="w3-padding-64 w3-center w3-white" id = "model1">
+    <h1 class="w3-jumbo"><b>Sentiment Analysis</p>
+    <p class="w3-large">VADER (Valence Aware Dictionary and Sentiment Reasoner) is a lexicon and rule-based sentiment analysis tool that is specifically attuned to sentiments expressed in social media</p>
+    <div class="w3-row-padding">
+      <div class="w3-half w3-section">
+          <img src="static/img/timeline.png" alt="timeline" width="600" height="500">
+      </div>
+      <div class="w3-half w3-section">
+          <object type="text/html" data="static/img/proportion.html" width="600" height="500"></object>
+      </div>
+    </div>
+  </div>
+
+  <!-- LDA Model -->
+  <div class="w3-padding-64 w3-center w3-white" id = "model2">
+    <div class="w3-row-padding">
+      <div class="w3-half w3-section">
+        <a href="/input" target="_blank">
+          <h1 class="w3-jumbo LDAmodel"><b>LDA Model</b></h1>
+        </a>
+        <p class="w3-large">Explain the data's similarity from the unobserved groups.</p>
+      </div>
+    <div class="w3-half w3-section">
+      <a href="static/img/LDA.html" target="_blank">
+        <img class="LDA" src="static/img/LDA.png" alt="LDA" width="600" height="400">
+      </a>
+    </div>
+
+    <!-- The Topics -->
+    <div class="w3-half w3-section">
+      <img class="myImg" src="static/img/positivefig16.png" alt="The First Positive Topic" width="200" height="200">
+      <img class="myImg" src="static/img/positivefig7.png" alt="The Second Positive Topic" width="200" height="200">
+      <img class="myImg" src="static/img/positivefig9.png" alt="The Third Positive Topic" width="200" height="200">
+      <img class="myImg" src="static/img/negativefig19.png" alt="The First Negative Topic" width="200" height="200">
+      <img class="myImg" src="static/img/negativefig7.png" alt="The Second Negative Topic" width="200" height="200">
+      <img class="myImg" src="static/img/negativefig8.png" alt="The Third Negative Topic" width="200" height="200">
+    </div>
+
+    <div class="w3-half w3-section">
+      <p align="left" class="w3-medium"> After we get key-words for negative and positive topics we draw the word cloud on the left-hand side. </p>
+      <p align="left" class="w3-medium">For Negative topics:   </p>
+      <p align="left" class="w3-medium">The large “Trade War” and “Trump” represent people’s concerns about the President Trump’s announcement about the tariffs which triggered the Sino-US trade war. Many people expressed the concerns regarding the stock market. Dow Jones plunges more than 724 points. This trade war put Wall Street into panic.</p>
+      <p align="left" class="w3-medium">Another concerns is regarding the agriculture, To fight back, China impose 25% duties on imports of the commodities. As an agricultural exporter, U.S. suffered from the increasing tariff of exporting “soybean” to China. It threatened the food consumption which is inelastic demand in China. However, “Mexico” may benefit from the trade war since it can export more soybeans and pork to satisfy China’s demand of agricultural products. That’s not good news for “farmers” since they may face higher price but lower sales. </p>
+      <p align="left" class="w3-medium">For Positive topics: </p >
+      <p align="left" class="w3-medium">On the other side, as a main “steel” importer, U.S. increased the tariff of steel to 25% and limited the investment of technology corporations from China. The possible “manufacturing” “job”  became the hot discussion topic. China’s technology and steel industry faced a lot of problem for entering the U.S. market.  </p>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <span class="close">×</span>
+      <img class="modal-content" id="img01">
+      <div id="caption"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Business Insights -->
+  <div class="w3-padding-64 w3-center w3-white" id = "reason">
+    <h1 class="w3-jumbo"  style="text-align: center;"><b>Business Insights</b></h1>
+    <p class="w3-large">The relationship between the public's sentiment and Dow Jones Industrial Average.</p>
+      <object type="text/html" data="static/img/DJIA_pos.html" width="800" height="600"></object>
+  </div>
+
+
+  <!-- Footer -->
+  <div class="w3-row-padding w3-2017-neutral-grey" id="people">
+    <div class="w3-col l2 m3 w3-margin-bottom" style="text-align: center;">
+      <h3>Cao, Xinlei</h3>
+      <p>xc2420</p>
+    </div>
+    <div class="w3-col l2 m3 w3-margin-bottom" style="text-align: center;">
+      <h3>Chen, Mengqi</h3>
+      <p>mc4396</p>
+    </div>
+    <div class="w3-col l2 m3 w3-margin-bottom" style="text-align: center;">
+      <h3>Li, Keran</h3>
+      <p>kl2993</p>
+    </div>
+    <div class="w3-col l2 m3 w3-margin-bottom" style="text-align: center;">
+      <h3>Li, Xinrou</h3>
+      <p>xl2685</p>
+    </div>
+    <div class="w3-col l2 m3 w3-margin-bottom" style="text-align: center;">
+      <h3>Tao, Wenyi</h3>
+      <p>wt2271</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+function w3_open() {
+  document.getElementById("main").style.marginLeft = "10%";
+  document.getElementById("mySidebar").style.width = "10%";
+  document.getElementById("mySidebar").style.display = "block";
+  document.getElementById("openNav").style.display = 'none';
+}
+function w3_close() {
+  document.getElementById("main").style.marginLeft = "0%";
+  document.getElementById("mySidebar").style.display = "none";
+  document.getElementById("openNav").style.display = "inline-block";
+}
+
+
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the image and insert it inside the modal - use its "alt" text as a caption
+var img = $('.myImg');
+//var img = document.getElementById('myImg1');
+var modalImg = $("#img01");
+var captionText = document.getElementById("caption");
+$('.myImg').click(function(){
+    modal.style.display = "block";
+    var newSrc = this.src;
+    modalImg.attr('src', newSrc);
+    captionText.innerHTML = this.alt;
+});
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+</script>
+
+</body>
+</html>

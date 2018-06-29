@@ -1,0 +1,22 @@
+<title>Sentiment Model</title>
+<style>
+body { 
+    background: lightblue; 
+}
+</style>
+
+<body>
+
+    <h1 style="text-align: center;">VADER Sentiment Analysis Model</h1>
+
+    <form action="/input" method="POST" style="text-align: center;">
+      <input type="text" name="text" value="input">
+      <input type="submit" value="Predict"> 
+    </form>
+    <div class="container" style="text-align: center;">
+      <h2 >Sentiment Score Image (English)</h2>    
+      <img src="data:image/png;base64,{{ plot_url }}" height="400" width="500">
+    </div>
+
+
+</body>
